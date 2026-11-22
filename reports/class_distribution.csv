@@ -1,0 +1,6 @@
+split,label,class,count,percent
+train,0,negative,12500,50.0
+train,1,positive,12500,50.0
+test,0,negative,12500,50.0
+test,1,positive,12500,50.0
+unsupervised,-1,unlabeled,50000,100.0

@@ -1,0 +1,60 @@
+{
+  "experiment": "task_6_inference",
+  "selected_model": "word_bigrams",
+  "model_path": "models/selected.joblib",
+  "model_sha256": "720366899987f8d4dd689ff80aa3f0bd61e331cc41b39817f5307361855b26d4",
+  "selected_artifact_digest_verified": true,
+  "label_mapping": {
+    "0": "negative",
+    "1": "positive"
+  },
+  "training_versions": {
+    "python": "3.14.4",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scikit_learn": "1.9.1",
+    "joblib": "1.6.0"
+  },
+  "preprocessing": {
+    "function": "preprocess.preprocess_text",
+    "rules": "Task 2: HTML removal, entity decoding, NFKC, lowercase, apostrophe/control/whitespace normalization; keep negation; reject inputs without letters or digits",
+    "implementation_sha256": "5f2807dd0726eecb38b606b9679325ab0bc0631a83db2dbeadebbeb3e35a6979"
+  },
+  "task_4_original_validation_reload_check": true,
+  "new_examples_reload_predictions_identical": true,
+  "fitted_state_unchanged": true,
+  "saved_artifact_unchanged": true,
+  "interpretation": "New unlabeled usage examples; no verified targets or accuracy claim. Mixed sentiment still receives one of the two classes. See Task 5 error review.",
+  "examples": [
+    {
+      "text": "Wonderful acting!<br />I loved every minute of this movie.",
+      "predicted_label": 1,
+      "predicted_sentiment": "positive"
+    },
+    {
+      "text": "A boring, predictable mess. The acting was terrible and I wanted it to end.",
+      "predicted_label": 0,
+      "predicted_sentiment": "negative"
+    },
+    {
+      "text": "I don’t usually like romantic movies, but this one was delightful.",
+      "predicted_label": 0,
+      "predicted_sentiment": "negative"
+    },
+    {
+      "text": "The cast was talented, but the dull story made this a disappointing film.",
+      "predicted_label": 0,
+      "predicted_sentiment": "negative"
+    },
+    {
+      "text": "An excellent, moving story with beautiful music. Highly recommended!",
+      "predicted_label": 1,
+      "predicted_sentiment": "positive"
+    },
+    {
+      "text": "Great visuals, weak dialogue. I have mixed feelings about this movie.",
+      "predicted_label": 1,
+      "predicted_sentiment": "positive"
+    }
+  ]
+}

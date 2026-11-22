@@ -1,0 +1,459 @@
+{
+  "experiment": "task_4_improvements",
+  "dataset": {
+    "id": "stanfordnlp/imdb",
+    "revision": "e6281661ce1c48d982bc483cf8a173c1bbeb5d31",
+    "source_split": "train",
+    "input_sha256": "e4eca11b4f218baf836a69dfa9d66e545ab8966a9834ef8a988c541804f3836a",
+    "input_rows": 25000,
+    "rejected_rows": 0,
+    "official_test_used": false
+  },
+  "split": {
+    "method": "StratifiedGroupKFold; first fold; groups are stateless cleaned texts",
+    "cleaned_text_overlap": 0,
+    "random_state": 42,
+    "validation_size": 0.2,
+    "row_positions": "baseline_split.csv",
+    "train_rows": 20000,
+    "validation_rows": 5000,
+    "class_counts": {
+      "train": {
+        "0": 10000,
+        "1": 10000
+      },
+      "validation": {
+        "0": 2500,
+        "1": 2500
+      }
+    }
+  },
+  "baseline_reference": "reports/baseline_results.json",
+  "baseline_versions": {
+    "python": "3.14.4",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scikit_learn": "1.9.1",
+    "joblib": "1.6.0"
+  },
+  "versions": {
+    "python": "3.14.4",
+    "pandas": "3.1.1",
+    "numpy": "2.5.5",
+    "scikit_learn": "1.9.1",
+    "joblib": "1.6.0"
+  },
+  "label_mapping": {
+    "0": "negative",
+    "1": "positive"
+  },
+  "selection": {
+    "metric": "f1_macro",
+    "selected": "word_bigrams",
+    "tie_policy": "Baseline first, then candidate declaration order",
+    "method": "One comparison of three predefined candidates; no hyperparameter search"
+  },
+  "experiments": [
+    {
+      "name": "baseline",
+      "motivation_and_changes": "Task 3 reference: TF-IDF unigrams with Logistic Regression.",
+      "preprocessing": {
+        "function": "preprocess.preprocess_text",
+        "rules": "Task 2: HTML removal, entity decoding, NFKC, lowercase, apostrophe/control/whitespace normalization; keep negation; reject inputs without letters or digits",
+        "implementation_sha256": "5f2807dd0726eecb38b606b9679325ab0bc0631a83db2dbeadebbeb3e35a6979"
+      },
+      "vectorizer": {
+        "type": "TfidfVectorizer",
+        "params": {
+          "analyzer": "word",
+          "binary": false,
+          "decode_error": "strict",
+          "dtype": "float64",
+          "encoding": "utf-8",
+          "input": "content",
+          "lowercase": false,
+          "max_df": 1.0,
+          "max_features": 20000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            1
+          ],
+          "norm": "l2",
+          "preprocessor": null,
+          "smooth_idf": true,
+          "stop_words": null,
+          "strip_accents": null,
+          "sublinear_tf": false,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "tokenizer": null,
+          "use_idf": true,
+          "vocabulary": null
+        }
+      },
+      "classifier": {
+        "type": "LogisticRegression",
+        "params": {
+          "C": 1.0,
+          "class_weight": null,
+          "dual": false,
+          "fit_intercept": true,
+          "intercept_scaling": 1,
+          "l1_ratio": 0.0,
+          "max_iter": 1000,
+          "n_jobs": null,
+          "penalty": "deprecated",
+          "random_state": 42,
+          "solver": "lbfgs",
+          "tol": 0.0001,
+          "verbose": 0,
+          "warm_start": false
+        }
+      },
+      "fitted_features": 20000,
+      "metrics": {
+        "accuracy": 0.8846,
+        "precision_macro": 0.8847359810851547,
+        "recall_macro": 0.8846,
+        "f1_macro": 0.8845898023549361
+      },
+      "classification_report": {
+        "negative": {
+          "precision": 0.8919690175295556,
+          "recall": 0.8752,
+          "f1-score": 0.8835049464970725,
+          "support": 2500.0
+        },
+        "positive": {
+          "precision": 0.8775029446407538,
+          "recall": 0.894,
+          "f1-score": 0.8856746582127997,
+          "support": 2500.0
+        },
+        "accuracy": 0.8846,
+        "macro avg": {
+          "precision": 0.8847359810851547,
+          "recall": 0.8846,
+          "f1-score": 0.8845898023549361,
+          "support": 5000.0
+        },
+        "weighted avg": {
+          "precision": 0.8847359810851547,
+          "recall": 0.8846,
+          "f1-score": 0.8845898023549362,
+          "support": 5000.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          2188,
+          312
+        ],
+        [
+          265,
+          2235
+        ]
+      ],
+      "fit_seconds": 8.518742087999271,
+      "predict_seconds": 1.3312030830002186
+    },
+    {
+      "name": "word_bigrams",
+      "motivation_and_changes": "Add adjacent-word context such as 'not good'; increase the feature cap from 20,000 to 40,000 to accommodate unigrams and bigrams.",
+      "preprocessing": {
+        "function": "preprocess.preprocess_text",
+        "rules": "Task 2: HTML removal, entity decoding, NFKC, lowercase, apostrophe/control/whitespace normalization; keep negation; reject inputs without letters or digits",
+        "implementation_sha256": "5f2807dd0726eecb38b606b9679325ab0bc0631a83db2dbeadebbeb3e35a6979"
+      },
+      "vectorizer": {
+        "type": "TfidfVectorizer",
+        "params": {
+          "analyzer": "word",
+          "binary": false,
+          "decode_error": "strict",
+          "dtype": "float64",
+          "encoding": "utf-8",
+          "input": "content",
+          "lowercase": false,
+          "max_df": 1.0,
+          "max_features": 40000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            2
+          ],
+          "norm": "l2",
+          "preprocessor": null,
+          "smooth_idf": true,
+          "stop_words": null,
+          "strip_accents": null,
+          "sublinear_tf": false,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "tokenizer": null,
+          "use_idf": true,
+          "vocabulary": null
+        }
+      },
+      "classifier": {
+        "type": "LogisticRegression",
+        "params": {
+          "C": 1.0,
+          "class_weight": null,
+          "dual": false,
+          "fit_intercept": true,
+          "intercept_scaling": 1,
+          "l1_ratio": 0.0,
+          "max_iter": 1000,
+          "n_jobs": null,
+          "penalty": "deprecated",
+          "random_state": 42,
+          "solver": "lbfgs",
+          "tol": 0.0001,
+          "verbose": 0,
+          "warm_start": false
+        }
+      },
+      "fitted_features": 40000,
+      "metrics": {
+        "accuracy": 0.8952,
+        "precision_macro": 0.8953338442263012,
+        "recall_macro": 0.8952,
+        "f1_macro": 0.8951911289771566
+      },
+      "classification_report": {
+        "negative": {
+          "precision": 0.9026079869600652,
+          "recall": 0.886,
+          "f1-score": 0.8942268873637464,
+          "support": 2500.0
+        },
+        "positive": {
+          "precision": 0.8880597014925373,
+          "recall": 0.9044,
+          "f1-score": 0.8961553705905668,
+          "support": 2500.0
+        },
+        "accuracy": 0.8952,
+        "macro avg": {
+          "precision": 0.8953338442263012,
+          "recall": 0.8952,
+          "f1-score": 0.8951911289771566,
+          "support": 5000.0
+        },
+        "weighted avg": {
+          "precision": 0.8953338442263011,
+          "recall": 0.8952,
+          "f1-score": 0.8951911289771566,
+          "support": 5000.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          2215,
+          285
+        ],
+        [
+          239,
+          2261
+        ]
+      ],
+      "fit_seconds": 13.756465331998697,
+      "predict_seconds": 1.959145079001246
+    },
+    {
+      "name": "count_naive_bayes",
+      "motivation_and_changes": "Replace TF-IDF with unigram counts and Logistic Regression with MultinomialNB (alpha=1): test a simple generative classifier.",
+      "preprocessing": {
+        "function": "preprocess.preprocess_text",
+        "rules": "Task 2: HTML removal, entity decoding, NFKC, lowercase, apostrophe/control/whitespace normalization; keep negation; reject inputs without letters or digits",
+        "implementation_sha256": "5f2807dd0726eecb38b606b9679325ab0bc0631a83db2dbeadebbeb3e35a6979"
+      },
+      "vectorizer": {
+        "type": "CountVectorizer",
+        "params": {
+          "analyzer": "word",
+          "binary": false,
+          "decode_error": "strict",
+          "dtype": "int64",
+          "encoding": "utf-8",
+          "input": "content",
+          "lowercase": false,
+          "max_df": 1.0,
+          "max_features": 20000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            1
+          ],
+          "preprocessor": null,
+          "stop_words": null,
+          "strip_accents": null,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "tokenizer": null,
+          "vocabulary": null
+        }
+      },
+      "classifier": {
+        "type": "MultinomialNB",
+        "params": {
+          "alpha": 1.0,
+          "class_prior": null,
+          "fit_prior": true,
+          "force_alpha": true
+        }
+      },
+      "fitted_features": 20000,
+      "metrics": {
+        "accuracy": 0.8486,
+        "precision_macro": 0.8506467108252184,
+        "recall_macro": 0.8486,
+        "f1_macro": 0.84837874820453
+      },
+      "classification_report": {
+        "negative": {
+          "precision": 0.8238573021181717,
+          "recall": 0.8868,
+          "f1-score": 0.8541706800231169,
+          "support": 2500.0
+        },
+        "positive": {
+          "precision": 0.8774361195322651,
+          "recall": 0.8104,
+          "f1-score": 0.842586816385943,
+          "support": 2500.0
+        },
+        "accuracy": 0.8486,
+        "macro avg": {
+          "precision": 0.8506467108252184,
+          "recall": 0.8486,
+          "f1-score": 0.84837874820453,
+          "support": 5000.0
+        },
+        "weighted avg": {
+          "precision": 0.8506467108252184,
+          "recall": 0.8486,
+          "f1-score": 0.84837874820453,
+          "support": 5000.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          2217,
+          283
+        ],
+        [
+          474,
+          2026
+        ]
+      ],
+      "fit_seconds": 5.354378620000716,
+      "predict_seconds": 1.286896113999319
+    },
+    {
+      "name": "linear_svm",
+      "motivation_and_changes": "Keep baseline TF-IDF and replace Logistic Regression with LinearSVC (C=1, max_iter=5000, seed 42): test a margin-based classifier.",
+      "preprocessing": {
+        "function": "preprocess.preprocess_text",
+        "rules": "Task 2: HTML removal, entity decoding, NFKC, lowercase, apostrophe/control/whitespace normalization; keep negation; reject inputs without letters or digits",
+        "implementation_sha256": "5f2807dd0726eecb38b606b9679325ab0bc0631a83db2dbeadebbeb3e35a6979"
+      },
+      "vectorizer": {
+        "type": "TfidfVectorizer",
+        "params": {
+          "analyzer": "word",
+          "binary": false,
+          "decode_error": "strict",
+          "dtype": "float64",
+          "encoding": "utf-8",
+          "input": "content",
+          "lowercase": false,
+          "max_df": 1.0,
+          "max_features": 20000,
+          "min_df": 2,
+          "ngram_range": [
+            1,
+            1
+          ],
+          "norm": "l2",
+          "preprocessor": null,
+          "smooth_idf": true,
+          "stop_words": null,
+          "strip_accents": null,
+          "sublinear_tf": false,
+          "token_pattern": "(?u)\\b\\w\\w+\\b",
+          "tokenizer": null,
+          "use_idf": true,
+          "vocabulary": null
+        }
+      },
+      "classifier": {
+        "type": "LinearSVC",
+        "params": {
+          "C": 1.0,
+          "class_weight": null,
+          "dual": "auto",
+          "fit_intercept": true,
+          "intercept_scaling": 1,
+          "loss": "squared_hinge",
+          "max_iter": 5000,
+          "multi_class": "ovr",
+          "penalty": "l2",
+          "random_state": 42,
+          "tol": 0.0001,
+          "verbose": 0
+        }
+      },
+      "fitted_features": 20000,
+      "metrics": {
+        "accuracy": 0.8906,
+        "precision_macro": 0.8906390639063906,
+        "recall_macro": 0.8906000000000001,
+        "f1_macro": 0.8905972649316234
+      },
+      "classification_report": {
+        "negative": {
+          "precision": 0.8945454545454545,
+          "recall": 0.8856,
+          "f1-score": 0.8900502512562815,
+          "support": 2500.0
+        },
+        "positive": {
+          "precision": 0.8867326732673267,
+          "recall": 0.8956,
+          "f1-score": 0.8911442786069652,
+          "support": 2500.0
+        },
+        "accuracy": 0.8906,
+        "macro avg": {
+          "precision": 0.8906390639063906,
+          "recall": 0.8906000000000001,
+          "f1-score": 0.8905972649316234,
+          "support": 5000.0
+        },
+        "weighted avg": {
+          "precision": 0.8906390639063906,
+          "recall": 0.8906,
+          "f1-score": 0.8905972649316234,
+          "support": 5000.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          2214,
+          286
+        ],
+        [
+          261,
+          2239
+        ]
+      ],
+      "fit_seconds": 5.894348630999957,
+      "predict_seconds": 1.3724817799993616
+    }
+  ],
+  "persistence": {
+    "model_path": "models/selected.joblib",
+    "model_sha256": "720366899987f8d4dd689ff80aa3f0bd61e331cc41b39817f5307361855b26d4",
+    "reload_predictions_identical": true
+  }
+}
